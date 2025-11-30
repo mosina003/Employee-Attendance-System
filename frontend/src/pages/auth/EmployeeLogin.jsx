@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { motion } from 'framer-motion';
-import { login, reset } from '../../store/slices/authSlice';
+import { login, reset, logout } from '../../store/slices/authSlice';
 import { FaUser, FaLock } from 'react-icons/fa';
 
 function EmployeeLogin() {
@@ -21,22 +21,32 @@ function EmployeeLogin() {
     (state) => state.auth
   );
 
+  // Clear any existing user on component mount
+  useEffect(() => {
+    // Clear localStorage on mount to prevent cached data issues
+    localStorage.removeItem('user');
+    dispatch(logout());
+    dispatch(reset());
+  }, [dispatch]);
+
   useEffect(() => {
     if (isError) {
       toast.error(message);
+      dispatch(reset());
+      return;
     }
 
     if (isSuccess && user) {
       if (user.role === 'employee') {
         toast.success('Login successful!');
         navigate('/employee/dashboard');
-      } else {
+      } else if (user.role === 'manager') {
         toast.error('Please use the manager login page');
-        dispatch(reset());
+        localStorage.removeItem('user');
+        dispatch(logout());
       }
+      dispatch(reset());
     }
-
-    dispatch(reset());
   }, [user, isError, isSuccess, message, navigate, dispatch]);
 
   const onChange = (e) => {
@@ -174,7 +184,7 @@ function EmployeeLogin() {
         <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
           <p className="text-xs font-semibold text-blue-800 mb-2">Demo Credentials:</p>
           <p className="text-xs text-blue-700">Email: steve@gmail.com</p>
-          <p className="text-xs text-blue-700">Password: qwerty</p>
+          <p className="text-xs text-blue-700">Password: 123456</p>
         </div>
       </motion.div>
     </div>

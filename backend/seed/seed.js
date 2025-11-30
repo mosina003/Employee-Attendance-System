@@ -16,6 +16,14 @@ const users = [
     department: 'Management'
   },
   {
+    name: 'Manager',
+    email: 'manager@gmail.com',
+    password: 'password',
+    role: 'manager',
+    employeeId: 'MGR002',
+    department: 'Management'
+  },
+  {
     name: 'Alice Johnson',
     email: 'alice@test.com',
     password: 'password123',
@@ -54,6 +62,22 @@ const users = [
     role: 'employee',
     employeeId: 'EMP005',
     department: 'HR'
+  },
+  {
+    name: 'Mosina',
+    email: 'smosina003@gmail.com',
+    password: 'password',
+    role: 'employee',
+    employeeId: 'MK123',
+    department: 'Engineering'
+  },
+  {
+    name: 'steve',
+    email: 'steve@gmail.com',
+    password: '123456',
+    role: 'employee',
+    employeeId: 'SH123',
+    department: 'Sales'
   }
 ];
 
@@ -121,7 +145,16 @@ const seedDatabase = async () => {
     await Attendance.deleteMany({});
     
     console.log('👥 Creating users...');
-    const createdUsers = await User.insertMany(users);
+    // Hash passwords before insertion
+    const usersWithHashedPasswords = await Promise.all(
+      users.map(async (user) => {
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(user.password, salt);
+        return { ...user, password: hashedPassword };
+      })
+    );
+    
+    const createdUsers = await User.insertMany(usersWithHashedPasswords);
     console.log(`✅ ${createdUsers.length} users created`);
     
     console.log('📅 Generating attendance records...');

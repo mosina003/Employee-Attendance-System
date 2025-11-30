@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { login, reset } from '../../store/slices/authSlice';
+import { login, reset, logout } from '../../store/slices/authSlice';
 import { FaUser, FaLock, FaUserTie } from 'react-icons/fa';
 
 function ManagerLogin() {
@@ -20,22 +20,32 @@ function ManagerLogin() {
     (state) => state.auth
   );
 
+  // Clear any existing user on component mount
+  useEffect(() => {
+    // Clear localStorage on mount to prevent cached data issues
+    localStorage.removeItem('user');
+    dispatch(logout());
+    dispatch(reset());
+  }, [dispatch]);
+
   useEffect(() => {
     if (isError) {
       toast.error(message);
+      dispatch(reset());
+      return;
     }
 
     if (isSuccess && user) {
       if (user.role === 'manager') {
         toast.success('Login successful!');
         navigate('/manager/dashboard');
-      } else {
+      } else if (user.role === 'employee') {
         toast.error('Please use the employee login page');
-        dispatch(reset());
+        localStorage.removeItem('user');
+        dispatch(logout());
       }
+      dispatch(reset());
     }
-
-    dispatch(reset());
   }, [user, isError, isSuccess, message, navigate, dispatch]);
 
   const onChange = (e) => {

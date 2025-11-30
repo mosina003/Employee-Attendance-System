@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import Navbar from '../../components/layout/Navbar';
+import Loading from '../../components/common/Loading';
 import attendanceService from '../../services/attendanceService';
 import { 
   FaCalendarAlt, 
@@ -40,7 +41,7 @@ function AttendanceHistory() {
       };
       
       const data = await attendanceService.getMyHistory(params);
-      setAttendanceData(data.data || []);
+      setAttendanceData(data || []);
     } catch (error) {
       toast.error('Failed to fetch attendance history');
     } finally {
@@ -316,9 +317,7 @@ function AttendanceHistory() {
         {/* Calendar */}
         <div className="bg-white rounded-lg shadow-md overflow-hidden">
           {loading ? (
-            <div className="flex justify-center items-center py-20">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-            </div>
+            <Loading text="Loading your attendance history..." />
           ) : (
             <>
               {/* Day Headers */}

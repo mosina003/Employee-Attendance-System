@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import Navbar from '../../components/layout/Navbar';
+import Loading from '../../components/common/Loading';
+import { DEPARTMENTS } from '../../utils/constants';
 import attendanceService from '../../services/attendanceService';
 import dashboardService from '../../services/dashboardService';
 import { 
@@ -35,9 +37,9 @@ function Reports() {
   const fetchEmployees = async () => {
     try {
       const data = await attendanceService.getAllUsers();
-      setEmployees(data.data || []);
+      setEmployees(data || []);
     } catch (error) {
-      console.error('Error fetching employees:', error);
+      // Error silently handled - employees list will remain empty
     }
   };
 
@@ -60,17 +62,17 @@ function Reports() {
       
       if (reportType === 'summary') {
         data = await attendanceService.getAllAttendance(params);
-        processSummaryReport(data.data);
+        processSummaryReport(data);
       } else if (reportType === 'employee' && selectedEmployee) {
         data = await attendanceService.getEmployeeAttendance(selectedEmployee, params);
-        processEmployeeReport(data.data);
+        processEmployeeReport(data);
       } else if (reportType === 'department') {
         data = await attendanceService.getAllAttendance(params);
-        processDepartmentReport(data.data);
+        processDepartmentReport(data);
       } else if (reportType === 'late') {
         params.status = 'late';
         data = await attendanceService.getAllAttendance(params);
-        processLateReport(data.data);
+        processLateReport(data);
       }
       
       toast.success('Report generated successfully!');
@@ -520,12 +522,11 @@ function Reports() {
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
               >
                 <option value="">All Departments</option>
-                <option value="Engineering">Engineering</option>
-                <option value="HR">HR</option>
-                <option value="Sales">Sales</option>
-                <option value="Marketing">Marketing</option>
-                <option value="Finance">Finance</option>
-                <option value="Operations">Operations</option>
+                {DEPARTMENTS.map((dept) => (
+                  <option key={dept} value={dept}>
+                    {dept}
+                  </option>
+                ))}
               </select>
             </div>
           </div>
@@ -555,9 +556,7 @@ function Reports() {
 
         {/* Report Display */}
         {loading ? (
-          <div className="flex justify-center items-center py-20">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
-          </div>
+          <Loading text="Generating report..." />
         ) : reportData ? (
           <div>
             {reportData.type === 'summary' && renderSummaryReport()}

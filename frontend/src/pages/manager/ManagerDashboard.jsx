@@ -2,10 +2,12 @@ import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { motion } from 'framer-motion';
 import Navbar from '../../components/layout/Navbar';
+import Loading from '../../components/common/Loading';
 import TrendCard from '../../components/dashboard/TrendCard';
 import AttendanceChart from '../../components/dashboard/AttendanceChart';
 import CircularProgress from '../../components/dashboard/CircularProgress';
 import dashboardService from '../../services/dashboardService';
+import { formatDate } from '../../utils/dateUtils';
 import {
   FaUsers,
   FaCheckCircle,
@@ -29,26 +31,16 @@ function ManagerDashboard() {
       setDashboardData(response.data);
     } catch (error) {
       toast.error('Failed to load dashboard data');
-      console.error(error);
     } finally {
       setLoading(false);
     }
-  };
-
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-    });
   };
 
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50">
         <Navbar />
-        <div className="flex items-center justify-center h-96">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
-        </div>
+        <Loading fullScreen text="Loading dashboard data..." />
       </div>
     );
   }

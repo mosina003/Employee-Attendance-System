@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import Navbar from '../../components/layout/Navbar';
+import Loading from '../../components/common/Loading';
+import { getStatusIcon } from '../../utils/statusUtils';
 import attendanceService from '../../services/attendanceService';
 import { 
   FaCalendarAlt, 
@@ -31,9 +33,9 @@ function TeamCalendar() {
   const fetchEmployees = async () => {
     try {
       const data = await attendanceService.getAllUsers();
-      setEmployees(data.data || []);
+      setEmployees(data || []);
     } catch (error) {
-      console.error('Error fetching employees:', error);
+      // Error silently handled - employees list will remain empty
     }
   };
 
@@ -52,7 +54,7 @@ function TeamCalendar() {
       };
       
       const data = await attendanceService.getCalendarData(params);
-      setAttendanceData(data.data || []);
+      setAttendanceData(data || []);
     } catch (error) {
       toast.error('Failed to fetch calendar data');
     } finally {
@@ -105,22 +107,6 @@ function TeamCalendar() {
 
   const goToToday = () => {
     setCurrentDate(new Date());
-  };
-
-  const getStatusBadgeSmall = (status) => {
-    const statusConfig = {
-      present: { bg: 'bg-green-500', icon: <FaCheckCircle /> },
-      absent: { bg: 'bg-red-500', icon: <FaTimesCircle /> },
-      late: { bg: 'bg-yellow-500', icon: <FaExclamationCircle /> },
-      'half-day': { bg: 'bg-orange-500', icon: <FaHourglassHalf /> }
-    };
-    
-    const config = statusConfig[status] || statusConfig.present;
-    return (
-      <div className={`${config.bg} text-white text-xs rounded-full w-5 h-5 flex items-center justify-center`}>
-        {config.icon}
-      </div>
-    );
   };
 
   const isToday = (day) => {
@@ -183,25 +169,25 @@ function TeamCalendar() {
             <div className="space-y-1">
               {present > 0 && (
                 <div className="flex items-center space-x-1">
-                  {getStatusBadgeSmall('present')}
+                  {getStatusIcon('present', 'w-5 h-5')}
                   <span className="text-xs text-gray-600">{present}</span>
                 </div>
               )}
               {late > 0 && (
                 <div className="flex items-center space-x-1">
-                  {getStatusBadgeSmall('late')}
+                  {getStatusIcon('late', 'w-5 h-5')}
                   <span className="text-xs text-gray-600">{late}</span>
                 </div>
               )}
               {halfDay > 0 && (
                 <div className="flex items-center space-x-1">
-                  {getStatusBadgeSmall('half-day')}
+                  {getStatusIcon('half-day', 'w-5 h-5')}
                   <span className="text-xs text-gray-600">{halfDay}</span>
                 </div>
               )}
               {absent > 0 && (
                 <div className="flex items-center space-x-1">
-                  {getStatusBadgeSmall('absent')}
+                  {getStatusIcon('absent', 'w-5 h-5')}
                   <span className="text-xs text-gray-600">{absent}</span>
                 </div>
               )}
@@ -289,19 +275,19 @@ function TeamCalendar() {
           {/* Legend */}
           <div className="mt-6 flex flex-wrap gap-4 text-sm">
             <div className="flex items-center space-x-2">
-              {getStatusBadgeSmall('present')}
+              {getStatusIcon('present', 'w-5 h-5')}
               <span className="text-gray-600">Present</span>
             </div>
             <div className="flex items-center space-x-2">
-              {getStatusBadgeSmall('late')}
+              {getStatusIcon('late', 'w-5 h-5')}
               <span className="text-gray-600">Late</span>
             </div>
             <div className="flex items-center space-x-2">
-              {getStatusBadgeSmall('half-day')}
+              {getStatusIcon('half-day', 'w-5 h-5')}
               <span className="text-gray-600">Half Day</span>
             </div>
             <div className="flex items-center space-x-2">
-              {getStatusBadgeSmall('absent')}
+              {getStatusIcon('absent', 'w-5 h-5')}
               <span className="text-gray-600">Absent</span>
             </div>
           </div>
@@ -310,9 +296,7 @@ function TeamCalendar() {
         {/* Calendar */}
         <div className="bg-white rounded-lg shadow-md overflow-hidden">
           {loading ? (
-            <div className="flex justify-center items-center py-20">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
-            </div>
+            <Loading text="Loading calendar data..." />
           ) : (
             <>
               {/* Day Headers */}

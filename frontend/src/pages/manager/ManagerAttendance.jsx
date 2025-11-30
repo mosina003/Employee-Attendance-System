@@ -1,17 +1,17 @@
 import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import Navbar from '../../components/layout/Navbar';
+import Loading from '../../components/common/Loading';
 import attendanceService from '../../services/attendanceService';
+import { formatDate, formatTime } from '../../utils/dateUtils';
+import { getStatusBadge } from '../../utils/statusUtils';
+import { ITEMS_PER_PAGE, DEPARTMENTS } from '../../utils/constants';
 import { 
   FaSearch, 
   FaFilter, 
   FaDownload, 
   FaCalendar, 
-  FaClock,
-  FaCheckCircle,
-  FaTimesCircle,
-  FaExclamationCircle,
-  FaHourglassHalf
+  FaClock
 } from 'react-icons/fa';
 
 function ManagerAttendance() {
@@ -22,7 +22,7 @@ function ManagerAttendance() {
   
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const itemsPerPage = ITEMS_PER_PAGE;
   
   // Filter states
   const [filters, setFilters] = useState({
@@ -41,9 +41,9 @@ function ManagerAttendance() {
   const fetchEmployees = async () => {
     try {
       const data = await attendanceService.getAllUsers();
-      setEmployees(data.data || []);
+      setEmployees(data || []);
     } catch (error) {
-      console.error('Error fetching employees:', error);
+      // Error silently handled - employees list will remain empty
     }
   };
 
@@ -66,7 +66,7 @@ function ManagerAttendance() {
         data = await attendanceService.getEmployeeAttendance(filters.employeeId, params);
         
         // Apply status and department filters client-side for individual employee
-        let filteredData = data.data || [];
+        let filteredData = data || [];
         if (filters.status) {
           filteredData = filteredData.filter(record => record.status === filters.status);
         }
@@ -76,7 +76,7 @@ function ManagerAttendance() {
         setAttendance(filteredData);
       } else {
         data = await attendanceService.getAllAttendance(params);
-        setAttendance(data.data || []);
+        setAttendance(data || []);
       }
     } catch (error) {
       toast.error(error.response?.data?.message || 'Failed to fetch attendance');
@@ -110,7 +110,7 @@ function ManagerAttendance() {
     try {
       setLoading(true);
       const data = await attendanceService.getAllAttendance({});
-      setAttendance(data.data || []);
+      setAttendance(data || []);
     } catch (error) {
       toast.error(error.response?.data?.message || 'Failed to fetch attendance');
     } finally {
@@ -145,54 +145,7 @@ function ManagerAttendance() {
     }
   };
 
-  const getStatusBadge = (status) => {
-    const statusConfig = {
-      present: {
-        bg: 'bg-green-100',
-        text: 'text-green-800',
-        icon: <FaCheckCircle className="inline mr-1" />
-      },
-      absent: {
-        bg: 'bg-red-100',
-        text: 'text-red-800',
-        icon: <FaTimesCircle className="inline mr-1" />
-      },
-      late: {
-        bg: 'bg-yellow-100',
-        text: 'text-yellow-800',
-        icon: <FaExclamationCircle className="inline mr-1" />
-      },
-      'half-day': {
-        bg: 'bg-orange-100',
-        text: 'text-orange-800',
-        icon: <FaHourglassHalf className="inline mr-1" />
-      }
-    };
-
-    const config = statusConfig[status] || statusConfig.present;
-    
-    return (
-      <span className={`px-3 py-1 rounded-full text-xs font-semibold ${config.bg} ${config.text}`}>
-        {config.icon}
-        {status.charAt(0).toUpperCase() + status.slice(1)}
-      </span>
-    );
-  };
-
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
-  };
-
-  const formatTime = (dateString) => {
-    return new Date(dateString).toLocaleTimeString('en-US', {
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
+  // Utility functions moved to utils folder for reusability
 
   // Pagination logic
   const totalPages = Math.ceil(attendance.length / itemsPerPage);
@@ -303,13 +256,11 @@ function ManagerAttendance() {
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
               >
                 <option value="">All Departments</option>
-                <option value="Engineering">Engineering</option>
-                <option value="HR">HR</option>
-                <option value="Sales">Sales</option>
-                <option value="Marketing">Marketing</option>
-                <option value="Finance">Finance</option>
-                <option value="Operations">Operations</option>
-                <option value="Management">Management</option>
+                {DEPARTMENTS.map((dept) => (
+                  <option key={dept} value={dept}>
+                    {dept}
+                  </option>
+                ))}
               </select>
             </div>
           </div>
@@ -351,9 +302,7 @@ function ManagerAttendance() {
           </div>
 
           {loading ? (
-            <div className="flex justify-center items-center py-12">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
-            </div>
+            <Loading text="Loading attendance records..." />
           ) : attendance.length === 0 ? (
             <div className="text-center py-12">
               <p className="text-gray-500 text-lg">No attendance records found</p>

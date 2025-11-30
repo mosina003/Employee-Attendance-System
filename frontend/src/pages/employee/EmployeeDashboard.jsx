@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { motion } from 'framer-motion';
 import Navbar from '../../components/layout/Navbar';
+import Loading from '../../components/common/Loading';
 import TrendCard from '../../components/dashboard/TrendCard';
 import CircularProgress from '../../components/dashboard/CircularProgress';
 import ActivityTimeline from '../../components/dashboard/ActivityTimeline';
@@ -36,7 +37,6 @@ function EmployeeDashboard() {
       setDashboardData(response.data);
     } catch (error) {
       toast.error('Failed to load dashboard data');
-      console.error(error);
     } finally {
       setLoading(false);
     }
@@ -103,9 +103,7 @@ function EmployeeDashboard() {
     return (
       <div className="min-h-screen bg-gray-50">
         <Navbar />
-        <div className="flex items-center justify-center h-96">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-        </div>
+        <Loading fullScreen text="Loading your dashboard..." />
       </div>
     );
   }
