@@ -1,6 +1,7 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
+const path = require('path');
 const connectDB = require('./config/db');
 const errorHandler = require('./middleware/errorHandler');
 
@@ -22,10 +23,20 @@ app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/attendance', require('./routes/attendanceRoutes'));
 app.use('/api/dashboard', require('./routes/dashboardRoutes'));
 
-// Health check
-app.get('/', (req, res) => {
-  res.json({ message: 'Employee Attendance API is running' });
-});
+// Serve frontend in production
+if (process.env.NODE_ENV === 'production') {
+  // Set static folder
+  app.use(express.static(path.join(__dirname, '../frontend/dist')));
+
+  app.get('*', (req, res) => {
+    res.sendFile(path.resolve(__dirname, '../frontend', 'dist', 'index.html'));
+  });
+} else {
+  // Health check for development
+  app.get('/', (req, res) => {
+    res.json({ message: 'Employee Attendance API is running' });
+  });
+}
 
 // Error handler
 app.use(errorHandler);
