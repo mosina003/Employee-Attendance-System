@@ -2,7 +2,7 @@
 
 A full-stack MERN (MongoDB, Express.js, React, Node.js) web application for managing employee attendance with role-based access control for employees and managers.
 
-**🚀 [Live Demo](https://employee-attendance-system.onrender.com)** | **📖 [Deployment Guide](./DEPLOYMENT.md)**
+**🚀 [Live Demo](https://employee-attendance-system-lrux.onrender.com)** | **📖 [Deployment Guide](./DEPLOYMENT.md)**
 
 ![MERN Stack](https://img.shields.io/badge/MERN-Stack-green)
 ![MongoDB](https://img.shields.io/badge/MongoDB-4.4+-green)
