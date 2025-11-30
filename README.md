@@ -157,6 +157,7 @@ npm run preview
 - Absent employees list
 - Department-wise analytics
 <img width="1916" height="918" alt="image" src="https://github.com/user-attachments/assets/5d633721-004c-4b2e-9e48-7b1ec8e6b3de" />
+
 ### Employee Dashboard
 - Check-in/Check-out buttons
 - Monthly attendance rate
@@ -246,14 +247,6 @@ VITE_APP_ENV=development
 - Department-wise statistics
 - Working days (excluding weekends)
 
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## 📄 License
-
-This project is open source and available under the [MIT License](LICENSE).
-
 ## 👨‍💻 Author
 
 **Mosina**
@@ -266,11 +259,3 @@ This project is open source and available under the [MIT License](LICENSE).
 - Tailwind CSS for the utility-first CSS framework
 - Recharts for beautiful data visualization
 - Framer Motion for smooth animations
-
-## 📞 Support
-
-For support, email mosina003@github.com or create an issue in the repository.
-
----
-
-**Made with ❤️ using MERN Stack**
