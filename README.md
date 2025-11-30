@@ -251,11 +251,3 @@ VITE_APP_ENV=development
 
 **Mosina**
 - GitHub: [@mosina003](https://github.com/mosina003)
-
-## 🙏 Acknowledgments
-
-- React Team for the amazing library
-- MongoDB for the flexible database
-- Tailwind CSS for the utility-first CSS framework
-- Recharts for beautiful data visualization
-- Framer Motion for smooth animations
