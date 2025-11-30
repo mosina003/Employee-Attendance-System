@@ -150,6 +150,8 @@ npm run preview
 ```
 
 ## 📱 Screenshots
+<img width="1916" height="918" alt="image" src="https://github.com/user-attachments/assets/5d633721-004c-4b2e-9e48-7b1ec8e6b3de" />
+<img width="1916" height="926" alt="Screenshot 2025-11-30 162016" src="https://github.com/user-attachments/assets/c90f94ec-af9f-4b28-b511-3c7ccc7376e5" />
 
 ### Employee Dashboard
 - Check-in/Check-out buttons
