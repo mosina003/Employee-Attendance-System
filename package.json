@@ -12,10 +12,10 @@
     "server": "cd backend && npm start",
     "client": "cd frontend && npm run dev",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "build": "cd frontend && npm install && npm run build",
+    "build": "cd frontend && npm ci --include=dev && npm run build",
     "install-all": "npm install --prefix backend && npm install --prefix frontend",
     "seed": "node backend/seed/seed.js",
-    "render-build": "npm install --prefix backend && npm install --prefix frontend && npm run build"
+    "render-build": "npm install --prefix backend && npm ci --prefix frontend --include=dev && npm run build"
   },
   "keywords": [
     "attendance",
